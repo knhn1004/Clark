@@ -66,8 +66,8 @@ export function parseRange(pages, maxPages) {
 
 /**
  * Print the page
- * @param {Object} data - Encoded file and its configurations
- * @param {String|undefined} data.raw - Encoded file
+ * @param {Object} data - PDF File and its configurations
+ * @param {String|undefined} data.file - PDF file
  * @param {Number|undefined} data.copies - Number of copies
  * @param {String|undefined} data.sides - Sides to print:
  * one-sided or two-sided
@@ -76,10 +76,13 @@ export function parseRange(pages, maxPages) {
  * @returns {ApiResponse} - Containing information for if
  * the page successfully printed
  */
-export async function printPage(data, token) {
+export async function printPage(data) {
   let status = new ApiResponse();
-  await axios.post(PERIPHERAL_API_URL + '/Printer/sendPrintRequest',
-    {...data, token})
+  await axios.post(PERIPHERAL_API_URL + '/Printer/sendPrintRequest', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+  })
     .then(response => {
       status.responseData = response.data.message;
     })
