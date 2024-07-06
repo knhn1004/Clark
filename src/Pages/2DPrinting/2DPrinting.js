@@ -134,8 +134,9 @@ export default function Printing(props) {
   }
 
   async function handlePrinting() {
+    // send print request with files and configuratiosn in formData
     const data = new FormData();
-    data.append('file', files); 
+    data.append('file', files);
     data.append('sides', sides);
     data.append('copies', copies);
     if (!pageRanges) {

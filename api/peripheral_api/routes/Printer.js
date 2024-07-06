@@ -27,16 +27,16 @@ let PRINTER_URL = process.env.PRINTER_URL
 const router = express.Router();
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function(req, file, cb) {
     cb(null, path.join(__dirname, '../../temp'));
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now()
-    cb(null, uniqueSuffix + file.originalname)
+  filename: function(req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
   }
-})
+});
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 router.get('/healthCheck', async (req, res) => {
 /*
@@ -79,25 +79,25 @@ router.post('/sendPrintRequest', upload.single('file'), async (req, res) => {
   form.append('copies', copies);
   form.append('sides', sides);
   form.append('pageRanges', pageRanges);
-  axios.post(PRINTER_URL + '/print', 
+  axios.post(PRINTER_URL + '/print',
     form,
-  {
-    headers: {
-      ...form.getHeaders(),
-    }
-  })
-  .then(() => {
-    fs.unlink(file.path, (err) => {
-      if (err) {
-        logger.error("Error removing file:", err);
-        return;
+    {
+      headers: {
+        ...form.getHeaders(),
       }
+    })
+    .then(() => {
+      fs.unlink(file.path, (err) => {
+        if (err) {
+          logger.error('Error removing file:', err);
+          return;
+        }
+      });
+      res.sendStatus(OK);
+    }).catch((err) => {
+      logger.error('/sendPrintRequest had an error: ', err);
+      res.sendStatus(SERVER_ERROR);
     });
-    res.sendStatus(OK);
-  }).catch((err) => {
-    logger.error('/sendPrintRequest had an error: ', err);
-    res.sendStatus(SERVER_ERROR);
-  });
 });
 
 module.exports = router;
